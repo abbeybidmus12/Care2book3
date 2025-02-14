@@ -46,6 +46,7 @@ function App() {
       {/* For the tempo routes */}
       {import.meta.env.VITE_TEMPO && useRoutes(routes)}
       <Routes>
+        {/* Landing and Registration Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/register/worker" element={<CareBookApplicationForm />} />
         <Route
