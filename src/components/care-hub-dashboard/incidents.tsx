@@ -74,13 +74,13 @@ export default function Incidents() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sh1">
-                      SH001 - Morning Shift (07:00 - 15:00)
+                      Morning Shift (07:00 - 15:00)
                     </SelectItem>
                     <SelectItem value="sh2">
-                      SH002 - Evening Shift (15:00 - 23:00)
+                      Evening Shift (15:00 - 23:00)
                     </SelectItem>
                     <SelectItem value="sh3">
-                      SH003 - Night Shift (23:00 - 07:00)
+                      Night Shift (23:00 - 07:00)
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -168,16 +168,16 @@ export default function Incidents() {
       </Card>
 
       {/* Incidents List */}
-      <Tabs defaultValue="open">
+      <Tabs defaultValue="pending">
         <TabsList>
-          <TabsTrigger value="open">Open</TabsTrigger>
+          <TabsTrigger value="pending">Open</TabsTrigger>
           <TabsTrigger value="investigating">Under Investigation</TabsTrigger>
           <TabsTrigger value="resolved">Resolved</TabsTrigger>
           <TabsTrigger value="dismissed">Dismissed</TabsTrigger>
         </TabsList>
 
-        {/* Open Incidents */}
-        <TabsContent value="open" className="space-y-4">
+        {/* Pending Incidents */}
+        <TabsContent value="pending" className="space-y-4">
           {[
             {
               id: "INC001",
@@ -230,16 +230,62 @@ export default function Incidents() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                      <Button size="sm">Start Investigation</Button>
-                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>Edit</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Review Incident</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label>Assessment</Label>
+                            <Textarea placeholder="Enter your assessment of the incident" />
+                          </div>
+                          <div>
+                            <Label>Action Required</Label>
+                            <Select>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select action" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="warning">
+                                  Issue Warning
+                                </SelectItem>
+                                <SelectItem value="training">
+                                  Additional Training
+                                </SelectItem>
+                                <SelectItem value="suspension">
+                                  Temporary Suspension
+                                </SelectItem>
+                                <SelectItem value="dismiss">
+                                  Dismiss Incident
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline">Dismiss</Button>
+                          <Button>Start Investigation</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
 
                   <div className="text-right space-y-2">
                     <Badge variant="secondary">{incident.status}</Badge>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" size="sm">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Contact Worker
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <FileText className="h-4 w-4 mr-2" />
+                        View Shift Details
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

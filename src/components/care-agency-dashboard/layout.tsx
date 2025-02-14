@@ -16,67 +16,63 @@ import {
 const navigation = [
   {
     name: "Overview",
-    href: "/careagencydashboard",
+    href: "/care-agency",
     icon: Home,
     color: "text-blue-500",
   },
   {
     name: "Care Workers",
-    href: "/careagencydashboard/workers",
+    href: "/care-agency/workers",
     icon: Users,
     color: "text-purple-500",
   },
   {
     name: "Timesheets",
-    href: "/careagencydashboard/timesheets",
+    href: "/care-agency/timesheets",
     icon: Clock,
     color: "text-green-500",
   },
   {
     name: "Payments",
-    href: "/careagencydashboard/payments",
+    href: "/care-agency/payments",
     icon: Wallet,
     color: "text-yellow-500",
   },
   {
     name: "Invoices",
-    href: "/careagencydashboard/invoices",
+    href: "/care-agency/invoices",
     icon: FileText,
     color: "text-orange-500",
   },
   {
     name: "Incidents",
-    href: "/careagencydashboard/incidents",
+    href: "/care-agency/incidents",
     icon: AlertTriangle,
     color: "text-red-500",
   },
   {
     name: "Care Hubs",
-    href: "/careagencydashboard/care-hubs",
+    href: "/care-agency/care-hubs",
     icon: Building2,
     color: "text-indigo-500",
   },
   {
     name: "Reports",
-    href: "/careagencydashboard/reports",
+    href: "/care-agency/reports",
     icon: FileText,
     color: "text-orange-500",
   },
   {
     name: "Settings",
-    href: "/careagencydashboard/settings",
+    href: "/care-agency/settings",
     icon: Settings,
     color: "text-gray-500",
   },
 ];
 
-interface CareAgencyDashboardLayoutProps {
-  children: React.ReactNode;
-}
+import { Outlet } from "react-router-dom";
 
-export default function CareAgencyDashboardLayout({
-  children,
-}: CareAgencyDashboardLayoutProps) {
+export default function CareAgencyDashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
@@ -144,7 +140,9 @@ export default function CareAgencyDashboardLayout({
         {/* Main Content */}
         <div className="flex-1 ml-64">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-            <div className="bg-white rounded-lg shadow">{children}</div>
+            <div className="bg-white rounded-lg shadow">
+              <Outlet />
+            </div>
           </div>
         </div>
       </div>

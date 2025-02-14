@@ -11,8 +11,10 @@ import DashboardOverview from "@/components/dashboard/overview";
 import AvailableShifts from "@/components/dashboard/available-shifts";
 import MyBookings from "@/components/dashboard/my-bookings";
 import MyAvailability from "@/components/dashboard/my-availability";
+import Timesheet from "@/components/dashboard/timesheet";
 import Payslips from "@/components/dashboard/payslips";
 import DashboardReports from "@/components/dashboard/reports";
+import DashboardSettings from "@/components/dashboard/settings";
 
 // Care Hub Dashboard Components
 import CareHubDashboardLayout from "@/components/care-hub-dashboard/layout";
@@ -45,19 +47,26 @@ function App() {
       {import.meta.env.VITE_TEMPO && useRoutes(routes)}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/register/worker" element={<CareBookApplicationForm />} />
+        <Route
+          path="/register/care-hub"
+          element={<CareHubRegistrationForm />}
+        />
 
         {/* Care Worker Dashboard Routes */}
-        <Route path="/workerdashboard" element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="shifts" element={<AvailableShifts />} />
           <Route path="bookings" element={<MyBookings />} />
           <Route path="availability" element={<MyAvailability />} />
+          <Route path="timesheet" element={<Timesheet />} />
           <Route path="payslips" element={<Payslips />} />
           <Route path="reports" element={<DashboardReports />} />
+          <Route path="settings" element={<DashboardSettings />} />
         </Route>
 
         {/* Care Hub Dashboard Routes */}
-        <Route path="/carehubdashboard" element={<CareHubDashboardLayout />}>
+        <Route path="/care-hub" element={<CareHubDashboardLayout />}>
           <Route index element={<CareHubOverview />} />
           <Route path="post-shifts" element={<PostShifts />} />
           <Route path="manage-shifts" element={<ManageShifts />} />
@@ -70,10 +79,7 @@ function App() {
         </Route>
 
         {/* Care Agency Dashboard Routes */}
-        <Route
-          path="/careagencydashboard"
-          element={<CareAgencyDashboardLayout />}
-        >
+        <Route path="/care-agency" element={<CareAgencyDashboardLayout />}>
           <Route index element={<CareAgencyOverview />} />
           <Route path="workers" element={<CareAgencyWorkers />} />
           <Route path="timesheets" element={<CareAgencyTimesheets />} />
@@ -84,16 +90,6 @@ function App() {
           <Route path="settings" element={<CareAgencySettings />} />
           <Route path="invoices" element={<CareAgencyInvoices />} />
         </Route>
-
-        {/* Registration Form Routes */}
-        <Route
-          path="/worker-registration"
-          element={<CareBookApplicationForm />}
-        />
-        <Route
-          path="/carehub-registration"
-          element={<CareHubRegistrationForm />}
-        />
 
         {/* Add this before any catchall route */}
         {import.meta.env.VITE_TEMPO && <Route path="/tempobook/*" />}

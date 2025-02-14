@@ -13,69 +13,60 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  {
-    name: "Overview",
-    href: "/carehubdashboard",
-    icon: Home,
-    color: "text-blue-500",
-  },
+  { name: "Overview", href: "/care-hub", icon: Home, color: "text-blue-500" },
   {
     name: "Post Shifts",
-    href: "/carehubdashboard/post-shifts",
+    href: "/care-hub/post-shifts",
     icon: Calendar,
     color: "text-purple-500",
   },
   {
     name: "Manage Shifts",
-    href: "/carehubdashboard/manage-shifts",
+    href: "/care-hub/manage-shifts",
     icon: ClipboardCheck,
     color: "text-green-500",
   },
   {
     name: "Timesheets",
-    href: "/carehubdashboard/timesheets",
+    href: "/care-hub/timesheets",
     icon: FileText,
     color: "text-yellow-500",
   },
   {
     name: "Workers",
-    href: "/carehubdashboard/workers",
+    href: "/care-hub/workers",
     icon: Users,
     color: "text-pink-500",
   },
   {
     name: "Incidents",
-    href: "/carehubdashboard/incidents",
+    href: "/care-hub/incidents",
     icon: AlertTriangle,
     color: "text-red-500",
   },
   {
     name: "Reports",
-    href: "/carehubdashboard/reports",
+    href: "/care-hub/reports",
     icon: FileText,
     color: "text-indigo-500",
   },
   {
     name: "Invoices",
-    href: "/carehubdashboard/invoices",
+    href: "/care-hub/invoices",
     icon: FileText,
     color: "text-orange-500",
   },
   {
     name: "Settings",
-    href: "/carehubdashboard/settings",
+    href: "/care-hub/settings",
     icon: Settings,
     color: "text-gray-500",
   },
 ];
 
-interface CareHubDashboardLayoutProps {
-  children: React.ReactNode;
-}
+import { Outlet } from "react-router-dom";
 
-export default function CareHubDashboardLayout({
-  children,
-}: CareHubDashboardLayoutProps) {
+export default function CareHubDashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
@@ -143,7 +134,9 @@ export default function CareHubDashboardLayout({
         {/* Main Content */}
         <div className="flex-1 ml-64">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-            <div className="bg-white rounded-lg shadow">{children}</div>
+            <div className="bg-white rounded-lg shadow">
+              <Outlet />
+            </div>
           </div>
         </div>
       </div>

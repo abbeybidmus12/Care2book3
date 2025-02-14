@@ -1,62 +1,56 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Calendar,
-  Clock,
-  FileText,
-  Home,
-  Settings,
-  Wallet,
-  BarChart,
-  BriefcaseBusiness,
-  Bell,
-} from "lucide-react";
+import { Calendar, Clock, FileText, Home, Settings, Bell } from "lucide-react";
 
 const navigation = [
-  {
-    name: "Overview",
-    href: "/workerdashboard",
-    icon: Home,
-    color: "text-blue-500",
-  },
+  { name: "Overview", href: "/dashboard", icon: Home, color: "text-blue-500" },
   {
     name: "Available Shifts",
-    href: "/workerdashboard/shifts",
+    href: "/dashboard/shifts",
     icon: Calendar,
     color: "text-purple-500",
   },
   {
     name: "My Bookings",
-    href: "/workerdashboard/bookings",
+    href: "/dashboard/bookings",
     icon: Clock,
     color: "text-blue-500",
   },
   {
     name: "My Availability",
-    href: "/workerdashboard/availability",
+    href: "/dashboard/availability",
     icon: Calendar,
     color: "text-green-500",
   },
   {
+    name: "Timesheet",
+    href: "/dashboard/timesheet",
+    icon: FileText,
+    color: "text-yellow-500",
+  },
+  {
     name: "Payslips",
-    href: "/workerdashboard/payslips",
+    href: "/dashboard/payslips",
     icon: FileText,
     color: "text-pink-500",
   },
   {
-    name: "Report",
-    href: "/workerdashboard/reports",
+    name: "Reports",
+    href: "/dashboard/reports",
     icon: Clock,
     color: "text-red-500",
   },
+  {
+    name: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+    color: "text-gray-500",
+  },
 ];
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
@@ -104,7 +98,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     variant="ghost"
                     className={
                       cn(
-                        "w-full justify-start gap-3 ",
+                        "w-full justify-start gap-3",
                         currentPath === item.href
                           ? "bg-blue-50 text-blue-700"
                           : "hover:bg-gray-50",
@@ -124,7 +118,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Main Content */}
         <div className="flex-1 ml-64">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-            <div className="bg-white rounded-lg shadow">{children}</div>
+            <div className="bg-white rounded-lg shadow">
+              <Outlet />
+            </div>
           </div>
         </div>
       </div>
