@@ -2,36 +2,41 @@ import { Route, Routes } from "react-router-dom";
 import { useRoutes } from "react-router-dom";
 import routes from "tempo-routes";
 import Home from "@/components/home";
-import DashboardPage from "@/pages/dashboard";
-import ShiftsPage from "@/pages/dashboard/shifts";
-import BookingsPage from "@/pages/dashboard/bookings";
-import AvailabilityPage from "@/pages/dashboard/availability";
-import TimesheetPage from "@/pages/dashboard/timesheet";
-import PayslipsPage from "@/pages/dashboard/payslips";
-import ReportsPage from "@/pages/dashboard/reports";
-import SettingsPage from "@/pages/dashboard/settings";
+import CareBookApplicationForm from "@/components/care-book-application-form";
+import CareHubRegistrationForm from "@/components/care-hub-registration-form";
 
-// Care Hub Routes
-import CareHubOverviewPage from "@/pages/care-hub";
-import CareHubPostShiftsPage from "@/pages/care-hub/post-shifts";
-import CareHubManageShiftsPage from "@/pages/care-hub/manage-shifts";
-import CareHubTimesheetsPage from "@/pages/care-hub/timesheets";
-import CareHubWorkersPage from "@/pages/care-hub/workers";
-import CareHubIncidentsPage from "@/pages/care-hub/incidents";
-import CareHubReportsPage from "@/pages/care-hub/reports";
-import CareHubInvoicesPage from "@/pages/care-hub/invoices";
-import CareHubSettingsPage from "@/pages/care-hub/settings";
+// Care Worker Dashboard Components
+import DashboardLayout from "@/components/dashboard/layout";
+import DashboardOverview from "@/components/dashboard/overview";
+import AvailableShifts from "@/components/dashboard/available-shifts";
+import MyBookings from "@/components/dashboard/my-bookings";
+import MyAvailability from "@/components/dashboard/my-availability";
+import Payslips from "@/components/dashboard/payslips";
+import DashboardReports from "@/components/dashboard/reports";
 
-// Care Agency Routes
-import CareAgencyOverviewPage from "@/pages/care-agency";
-import CareAgencyWorkersPage from "@/pages/care-agency/workers";
-import CareAgencyTimesheetsPage from "@/pages/care-agency/timesheets";
-import CareAgencyPaymentsPage from "@/pages/care-agency/payments";
-import CareAgencyIncidentsPage from "@/pages/care-agency/incidents";
-import CareAgencyCareHubsPage from "@/pages/care-agency/care-hubs";
-import CareAgencyReportsPage from "@/pages/care-agency/reports";
-import CareAgencySettingsPage from "@/pages/care-agency/settings";
-import CareAgencyInvoicesPage from "@/pages/care-agency/invoices";
+// Care Hub Dashboard Components
+import CareHubDashboardLayout from "@/components/care-hub-dashboard/layout";
+import CareHubOverview from "@/components/care-hub-dashboard/overview";
+import PostShifts from "@/components/care-hub-dashboard/post-shifts";
+import ManageShifts from "@/components/care-hub-dashboard/manage-shifts";
+import CareHubTimesheets from "@/components/care-hub-dashboard/timesheets";
+import CareHubWorkers from "@/components/care-hub-dashboard/workers";
+import CareHubIncidents from "@/components/care-hub-dashboard/incidents";
+import CareHubReports from "@/components/care-hub-dashboard/reports";
+import CareHubInvoices from "@/components/care-hub-dashboard/invoices";
+import CareHubSettings from "@/components/care-hub-dashboard/settings";
+
+// Care Agency Dashboard Components
+import CareAgencyDashboardLayout from "@/components/care-agency-dashboard/layout";
+import CareAgencyOverview from "@/components/care-agency-dashboard/overview";
+import CareAgencyWorkers from "@/components/care-agency-dashboard/workers";
+import CareAgencyTimesheets from "@/components/care-agency-dashboard/timesheets";
+import CareAgencyPayments from "@/components/care-agency-dashboard/payments";
+import CareAgencyIncidents from "@/components/care-agency-dashboard/incidents";
+import CareAgencyCareHubs from "@/components/care-agency-dashboard/care-hubs";
+import CareAgencyReports from "@/components/care-agency-dashboard/reports";
+import CareAgencySettings from "@/components/care-agency-dashboard/settings";
+import CareAgencyInvoices from "@/components/care-agency-dashboard/invoices";
 
 function App() {
   return (
@@ -42,68 +47,52 @@ function App() {
         <Route path="/" element={<Home />} />
 
         {/* Care Worker Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/shifts" element={<ShiftsPage />} />
-        <Route path="/dashboard/bookings" element={<BookingsPage />} />
-        <Route path="/dashboard/availability" element={<AvailabilityPage />} />
-        <Route path="/dashboard/timesheet" element={<TimesheetPage />} />
-        <Route path="/dashboard/payslips" element={<PayslipsPage />} />
-        <Route path="/dashboard/reports" element={<ReportsPage />} />
-        <Route path="/dashboard/settings" element={<SettingsPage />} />
+        <Route path="/workerdashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardOverview />} />
+          <Route path="shifts" element={<AvailableShifts />} />
+          <Route path="bookings" element={<MyBookings />} />
+          <Route path="availability" element={<MyAvailability />} />
+          <Route path="payslips" element={<Payslips />} />
+          <Route path="reports" element={<DashboardReports />} />
+        </Route>
 
         {/* Care Hub Dashboard Routes */}
-        <Route path="/care-hub" element={<CareHubOverviewPage />} />
-        <Route
-          path="/care-hub/post-shifts"
-          element={<CareHubPostShiftsPage />}
-        />
-        <Route
-          path="/care-hub/manage-shifts"
-          element={<CareHubManageShiftsPage />}
-        />
-        <Route
-          path="/care-hub/timesheets"
-          element={<CareHubTimesheetsPage />}
-        />
-        <Route path="/care-hub/workers" element={<CareHubWorkersPage />} />
-        <Route path="/care-hub/incidents" element={<CareHubIncidentsPage />} />
-        <Route path="/care-hub/reports" element={<CareHubReportsPage />} />
-        <Route path="/care-hub/invoices" element={<CareHubInvoicesPage />} />
-        <Route path="/care-hub/settings" element={<CareHubSettingsPage />} />
+        <Route path="/carehubdashboard" element={<CareHubDashboardLayout />}>
+          <Route index element={<CareHubOverview />} />
+          <Route path="post-shifts" element={<PostShifts />} />
+          <Route path="manage-shifts" element={<ManageShifts />} />
+          <Route path="timesheets" element={<CareHubTimesheets />} />
+          <Route path="workers" element={<CareHubWorkers />} />
+          <Route path="incidents" element={<CareHubIncidents />} />
+          <Route path="reports" element={<CareHubReports />} />
+          <Route path="invoices" element={<CareHubInvoices />} />
+          <Route path="settings" element={<CareHubSettings />} />
+        </Route>
 
         {/* Care Agency Dashboard Routes */}
-        <Route path="/care-agency" element={<CareAgencyOverviewPage />} />
         <Route
-          path="/care-agency/workers"
-          element={<CareAgencyWorkersPage />}
+          path="/careagencydashboard"
+          element={<CareAgencyDashboardLayout />}
+        >
+          <Route index element={<CareAgencyOverview />} />
+          <Route path="workers" element={<CareAgencyWorkers />} />
+          <Route path="timesheets" element={<CareAgencyTimesheets />} />
+          <Route path="payments" element={<CareAgencyPayments />} />
+          <Route path="incidents" element={<CareAgencyIncidents />} />
+          <Route path="care-hubs" element={<CareAgencyCareHubs />} />
+          <Route path="reports" element={<CareAgencyReports />} />
+          <Route path="settings" element={<CareAgencySettings />} />
+          <Route path="invoices" element={<CareAgencyInvoices />} />
+        </Route>
+
+        {/* Registration Form Routes */}
+        <Route
+          path="/worker-registration"
+          element={<CareBookApplicationForm />}
         />
         <Route
-          path="/care-agency/timesheets"
-          element={<CareAgencyTimesheetsPage />}
-        />
-        <Route
-          path="/care-agency/payments"
-          element={<CareAgencyPaymentsPage />}
-        />
-        <Route
-          path="/care-agency/incidents"
-          element={<CareAgencyIncidentsPage />}
-        />
-        <Route
-          path="/care-agency/care-hubs"
-          element={<CareAgencyCareHubsPage />}
-        />
-        <Route
-          path="/care-agency/reports"
-          element={<CareAgencyReportsPage />}
-        />
-        <Route
-          path="/care-agency/settings"
-          element={<CareAgencySettingsPage />}
-        />
-        <Route
-          path="/care-agency/invoices"
-          element={<CareAgencyInvoicesPage />}
+          path="/carehub-registration"
+          element={<CareHubRegistrationForm />}
         />
 
         {/* Add this before any catchall route */}

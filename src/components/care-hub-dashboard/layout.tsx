@@ -13,52 +13,57 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Overview", href: "/care-hub", icon: Home, color: "text-blue-500" },
+  {
+    name: "Overview",
+    href: "/carehubdashboard",
+    icon: Home,
+    color: "text-blue-500",
+  },
   {
     name: "Post Shifts",
-    href: "/care-hub/post-shifts",
+    href: "/carehubdashboard/post-shifts",
     icon: Calendar,
     color: "text-purple-500",
   },
   {
     name: "Manage Shifts",
-    href: "/care-hub/manage-shifts",
+    href: "/carehubdashboard/manage-shifts",
     icon: ClipboardCheck,
     color: "text-green-500",
   },
   {
     name: "Timesheets",
-    href: "/care-hub/timesheets",
+    href: "/carehubdashboard/timesheets",
     icon: FileText,
     color: "text-yellow-500",
   },
   {
     name: "Workers",
-    href: "/care-hub/workers",
+    href: "/carehubdashboard/workers",
     icon: Users,
     color: "text-pink-500",
   },
   {
     name: "Incidents",
-    href: "/care-hub/incidents",
+    href: "/carehubdashboard/incidents",
     icon: AlertTriangle,
     color: "text-red-500",
   },
   {
     name: "Reports",
-    href: "/care-hub/reports",
+    href: "/carehubdashboard/reports",
     icon: FileText,
     color: "text-indigo-500",
   },
   {
     name: "Invoices",
-    href: "/care-hub/invoices",
+    href: "/carehubdashboard/invoices",
     icon: FileText,
     color: "text-orange-500",
   },
   {
     name: "Settings",
-    href: "/care-hub/settings",
+    href: "/carehubdashboard/settings",
     icon: Settings,
     color: "text-gray-500",
   },

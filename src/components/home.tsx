@@ -1,43 +1,57 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import CareBookApplicationForm from "./care-book-application-form";
-import CareHubRegistrationForm from "./care-hub-registration-form";
+import { useNavigate } from "react-router-dom";
 
-function Home() {
-  const [activeForm, setActiveForm] = useState<"worker" | "hub" | null>(null);
-
-  if (!activeForm) {
-    return (
-      <div className="w-screen min-h-screen bg-gray-100 p-8 flex flex-col items-center justify-center space-y-8">
-        <h1 className="text-3xl font-bold text-center">Welcome to Care Hub</h1>
-        <div className="flex gap-4">
-          <Button size="lg" onClick={() => setActiveForm("worker")}>
-            Register as Care Worker
-          </Button>
-          <Button size="lg" onClick={() => setActiveForm("hub")}>
-            Register as Care Hub
-          </Button>
-        </div>
-      </div>
-    );
-  }
+export default function Home() {
+  const navigate = useNavigate();
 
   return (
-    <div className="w-screen min-h-screen bg-gray-100 p-8">
-      <Button
-        variant="outline"
-        className="mb-4"
-        onClick={() => setActiveForm(null)}
-      >
-        Back to Selection
-      </Button>
-      {activeForm === "worker" ? (
-        <CareBookApplicationForm />
-      ) : (
-        <CareHubRegistrationForm />
-      )}
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg space-y-6 max-w-md w-full">
+        <h1 className="text-2xl font-bold text-center">
+          Welcome to Care Management System
+        </h1>
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Dashboards</h2>
+            <Button
+              className="w-full"
+              onClick={() => navigate("/workerdashboard")}
+            >
+              Care Worker Dashboard
+            </Button>
+            <Button
+              className="w-full"
+              onClick={() => navigate("/carehubdashboard")}
+            >
+              Care Hub Dashboard
+            </Button>
+            <Button
+              className="w-full"
+              onClick={() => navigate("/careagencydashboard")}
+            >
+              Care Agency Dashboard
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Registration</h2>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate("/worker-registration")}
+            >
+              Register as Care Worker
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate("/carehub-registration")}
+            >
+              Register as Care Hub
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default Home;

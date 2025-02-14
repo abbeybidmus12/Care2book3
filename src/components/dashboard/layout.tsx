@@ -14,48 +14,41 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Overview", href: "/dashboard", icon: Home, color: "text-blue-500" },
+  {
+    name: "Overview",
+    href: "/workerdashboard",
+    icon: Home,
+    color: "text-blue-500",
+  },
   {
     name: "Available Shifts",
-    href: "/dashboard/shifts",
+    href: "/workerdashboard/shifts",
     icon: Calendar,
     color: "text-purple-500",
   },
   {
     name: "My Bookings",
-    href: "/dashboard/bookings",
+    href: "/workerdashboard/bookings",
     icon: Clock,
     color: "text-blue-500",
   },
   {
     name: "My Availability",
-    href: "/dashboard/availability",
+    href: "/workerdashboard/availability",
     icon: Calendar,
     color: "text-green-500",
   },
   {
-    name: "Timesheet",
-    href: "/dashboard/timesheet",
-    icon: FileText,
-    color: "text-yellow-500",
-  },
-  {
     name: "Payslips",
-    href: "/dashboard/payslips",
+    href: "/workerdashboard/payslips",
     icon: FileText,
     color: "text-pink-500",
   },
   {
     name: "Report",
-    href: "/dashboard/reports",
+    href: "/workerdashboard/reports",
     icon: Clock,
     color: "text-red-500",
-  },
-  {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-    color: "text-gray-500",
   },
 ];
 
