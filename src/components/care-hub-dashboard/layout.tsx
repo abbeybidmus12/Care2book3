@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,6 +78,16 @@ export default function CareHubDashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+  const { careHub, loading } = useSession();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!careHub) {
+    navigate("/care-hub/sign-in");
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -85,7 +96,9 @@ export default function CareHubDashboardLayout() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between items-center">
             <div className="flex-1 flex items-center pl-64">
-              <h1 className="text-xl font-bold">Welcome, Sunrise Care Home</h1>
+              <h1 className="text-xl font-bold">
+                Welcome, {careHub.care_home_name}
+              </h1>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon">

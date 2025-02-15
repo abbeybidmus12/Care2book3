@@ -1,3 +1,84 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { FC } from "react";
+
+interface BookingCardProps {
+  booking: any;
+  status: "pending" | "upcoming" | "past" | "canceled";
+}
+
+const BookingCard: FC<BookingCardProps> = ({ booking, status }) => (
+  <Card key={booking.bookingId || booking.id}>
+    <CardContent className="p-6">
+      <div className="grid grid-cols-[2fr,1fr] gap-6">
+        <div className="space-y-4">
+          <div>
+            <h3 className="font-semibold text-lg">{booking.role}</h3>
+            <div className="text-sm text-muted-foreground">
+              {booking.careHub}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Booking ID: {booking.bookingId || booking.id}
+            </div>
+            {booking.shiftId && (
+              <div className="text-sm text-muted-foreground">
+                Shift ID: {booking.shiftId}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              {booking.startTime} - {booking.endTime}
+            </div>
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              {booking.shiftType}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <MapPin className="h-4 w-4 mr-2" />
+              View Map
+              <ExternalLink className="h-4 w-4 ml-2" />
+            </Button>
+            {status === "pending" && (
+              <Button variant="destructive" size="sm">
+                Cancel Booking
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="text-right space-y-2">
+          <div className="text-sm">{booking.date}</div>
+          <div
+            className={`inline-block px-2 py-1 rounded-full text-xs ${
+              status === "pending"
+                ? "bg-yellow-100 text-yellow-800"
+                : status === "upcoming"
+                  ? "bg-green-100 text-green-800"
+                  : status === "past"
+                    ? "bg-gray-100 text-gray-800"
+                    : "bg-red-100 text-red-800"
+            }`}
+          >
+            {booking.status}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {status === "pending" &&
+              `Booked at: ${new Date(booking.bookedAt).toLocaleString()}`}
+            {status === "upcoming" &&
+              booking.approvedAt &&
+              `Approved at: ${new Date(booking.approvedAt).toLocaleString()}`}
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +101,68 @@ import {
 } from "@/components/ui/select";
 
 export default function MyBookings() {
-  const bookings = {
+  const [savedBookings, setSavedBookings] = useState([]);
+
+  useEffect(() => {
+    const loadBookings = async () => {
+      try {
+        const workerDetails = JSON.parse(
+          localStorage.getItem("workerDetails") || "{}",
+        );
+
+        const { data: bookings, error } = await supabase
+          .from("shift_bookings")
+          .select(
+            `
+            *,
+            shift:shifts(*)
+          `,
+          )
+          .eq("worker_id", workerDetails.id)
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        // Transform the data to match the expected format
+        const transformedBookings = bookings.map((booking) => ({
+          id: booking.id,
+          bookingId: booking.id,
+          shiftId: booking.shift_id,
+          role: booking.shift.role,
+          careHub: booking.shift.care_hub,
+          date: booking.shift.date,
+          startTime: booking.shift.start_time,
+          endTime: booking.shift.end_time,
+          shiftType: booking.shift.shift_type,
+          status: booking.status,
+          bookedAt: booking.created_at,
+        }));
+
+        setSavedBookings(transformedBookings);
+      } catch (error) {
+        console.error("Error loading bookings:", error);
+      }
+    };
+
+    loadBookings();
+
+    // Subscribe to realtime changes
+    const subscription = supabase
+      .channel("shift_bookings")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "shift_bookings" },
+        loadBookings,
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Static example data structure
+  const staticBookings = {
     pending: [
       {
         id: "BK125",
@@ -58,23 +200,6 @@ export default function MyBookings() {
         status: "Confirmed",
         canCancel: true,
       },
-      {
-        id: "BK124",
-        title: "Healthcare Assistant - Day Shift",
-        careHub: "Meadow View Care",
-        date: "Wednesday, March 6, 2024",
-        time: "7:00 AM - 7:00 PM",
-        rate: "£14/hr",
-        address: {
-          line1: "45 Meadow Lane",
-          line2: "Care Village",
-          city: "Liverpool",
-          postcode: "L3 5XY",
-        },
-        mapUrl: "https://maps.google.com/?q=45+Meadow+Lane+Liverpool+L3+5XY",
-        status: "Pending Cancellation",
-        canCancel: false,
-      },
     ],
     past: [
       {
@@ -110,53 +235,54 @@ export default function MyBookings() {
     ],
   };
 
+  // Combine saved bookings with static data structure
+  const bookings = {
+    pending:
+      savedBookings.length > 0
+        ? savedBookings.filter((booking) => booking.status === "Pending")
+        : staticBookings.pending,
+    upcoming:
+      savedBookings.length > 0
+        ? savedBookings.filter((booking) =>
+            ["Approved", "Confirmed"].includes(booking.status),
+          )
+        : staticBookings.upcoming,
+    past:
+      savedBookings.length > 0
+        ? savedBookings.filter((booking) => booking.status === "Completed")
+        : staticBookings.past,
+    canceled:
+      savedBookings.length > 0
+        ? savedBookings.filter((booking) =>
+            ["Rejected", "Cancelled"].includes(booking.status),
+          )
+        : staticBookings.canceled,
+  };
+
   return (
     <div className="p-6 space-y-6">
-      {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label>Date Range</Label>
               <Input type="date" />
             </div>
             <div>
               <Label>Care Hub</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Care Hub" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Care Hubs</SelectItem>
-                  <SelectItem value="sunrise">Sunrise Care Home</SelectItem>
-                  <SelectItem value="meadow">Meadow View Care</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input placeholder="Search by care hub" />
             </div>
             <div>
               <Label>Status</Label>
               <Select>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="pending">Pending Cancellation</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Sort By</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="recent">Most Recent</SelectItem>
-                  <SelectItem value="earnings">Highest Paid</SelectItem>
-                  <SelectItem value="date">Closest Date</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -164,282 +290,35 @@ export default function MyBookings() {
         </CardContent>
       </Card>
 
-      {/* Bookings List */}
       <Tabs defaultValue="pending">
         <TabsList>
-          <TabsTrigger value="pending">Pending Shifts</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming Shifts</TabsTrigger>
-          <TabsTrigger value="past">Past Shifts</TabsTrigger>
-          <TabsTrigger value="canceled">Canceled Shifts</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="past">Past</TabsTrigger>
+          <TabsTrigger value="canceled">Cancelled</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="space-y-4 mt-4">
+        <TabsContent value="pending" className="space-y-4">
           {bookings.pending.map((booking) => (
-            <Card key={booking.id}>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-[2fr,1fr] gap-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">
-                          {booking.title}
-                        </h3>
-                        <span className="text-sm text-muted-foreground">
-                          #{booking.id}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        <span>{booking.careHub}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-1 text-sm">
-                      <MapPin className="h-4 w-4" />
-                      <span>
-                        {booking.address.line1},
-                        {booking.address.line2 && ` ${booking.address.line2},`}
-                        {` ${booking.address.city}, ${booking.address.postcode}`}
-                      </span>
-                      <a
-                        href={booking.mapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                      <Button variant="destructive" size="sm">
-                        Cancel Application
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 text-right">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <div className="text-sm">
-                          <div>{booking.date}</div>
-                          <div>{booking.time}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <span className="inline-block px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-800">
-                      {booking.status}
-                    </span>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      Submitted: {booking.submittedAt}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <BookingCard key={booking.id} booking={booking} status="pending" />
           ))}
         </TabsContent>
 
-        <TabsContent value="upcoming" className="space-y-4 mt-4">
+        <TabsContent value="upcoming" className="space-y-4">
           {bookings.upcoming.map((booking) => (
-            <Card key={booking.id}>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-[2fr,1fr] gap-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">
-                          {booking.title}
-                        </h3>
-                        <span className="text-sm text-muted-foreground">
-                          #{booking.id}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        <span>{booking.careHub}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-1 text-sm">
-                      <MapPin className="h-4 w-4" />
-                      <span>
-                        {booking.address.line1},
-                        {booking.address.line2 && ` ${booking.address.line2},`}
-                        {` ${booking.address.city}, ${booking.address.postcode}`}
-                      </span>
-                      <a
-                        href={booking.mapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                      {booking.canCancel && (
-                        <Button variant="destructive" size="sm">
-                          Cancel Shift
-                        </Button>
-                      )}
-                      <Button variant="outline" size="sm">
-                        Contact Care Hub
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 text-right">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <div className="text-sm">
-                          <div>{booking.date}</div>
-                          <div>{booking.time}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <span
-                      className={`inline-block px-2 py-1 rounded-full text-xs ${
-                        booking.status === "Confirmed"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <BookingCard key={booking.id} booking={booking} status="upcoming" />
           ))}
         </TabsContent>
 
-        <TabsContent value="past" className="space-y-4 mt-4">
+        <TabsContent value="past" className="space-y-4">
           {bookings.past.map((booking) => (
-            <Card key={booking.id}>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-[2fr,1fr] gap-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">
-                          {booking.title}
-                        </h3>
-                        <span className="text-sm text-muted-foreground">
-                          #{booking.id}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        <span>{booking.careHub}</span>
-                      </div>
-                    </div>
-
-                    <div className="text-sm text-muted-foreground">
-                      <div>Total Hours: {booking.totalHours}</div>
-                      <div>Earnings: {booking.totalEarnings}</div>
-                      <div>Rating: {"★".repeat(booking.rating)}</div>
-                      {booking.feedback && (
-                        <div className="mt-2">
-                          <span className="font-medium">Feedback:</span>{" "}
-                          {booking.feedback}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Timesheet
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Rate Shift
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 text-right">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <div className="text-sm">
-                          <div>{booking.date}</div>
-                          <div>{booking.time}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <span className="inline-block px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                      Timesheet {booking.timesheetStatus}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <BookingCard key={booking.id} booking={booking} status="past" />
           ))}
         </TabsContent>
 
-        <TabsContent value="canceled" className="space-y-4 mt-4">
+        <TabsContent value="canceled" className="space-y-4">
           {bookings.canceled.map((booking) => (
-            <Card key={booking.id}>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-[2fr,1fr] gap-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">
-                          {booking.title}
-                        </h3>
-                        <span className="text-sm text-muted-foreground">
-                          #{booking.id}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        <span>{booking.careHub}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <AlertCircle className="h-4 w-4" />
-                      <div>
-                        <div>Canceled by: {booking.canceledBy}</div>
-                        <div>Reason: {booking.reason}</div>
-                      </div>
-                    </div>
-
-                    {booking.policyImpact && (
-                      <div className="text-sm text-red-600">
-                        Policy Impact: {booking.policyImpact}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-4 text-right">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <div className="text-sm">
-                          <div>{booking.date}</div>
-                          <div>{booking.time}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <BookingCard key={booking.id} booking={booking} status="canceled" />
           ))}
         </TabsContent>
       </Tabs>

@@ -1,21 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, FileText, Users, AlertTriangle } from "lucide-react";
+import { useSession } from "@/lib/session";
 
 export default function CareHubOverview() {
+  const { careHub } = useSession();
+
   return (
     <div className="p-6 space-y-6">
       {/* Facility Summary */}
       <div className="flex items-start gap-6">
         <div className="h-24 w-24 rounded-lg bg-gray-200" />
         <div>
-          <h2 className="text-2xl font-bold">Sunrise Care Home</h2>
-          <p className="text-gray-600">CQC Number: 1234567890</p>
+          <h2 className="text-2xl font-bold">{careHub?.care_home_name}</h2>
+          <p className="text-gray-600">CQC Number: {careHub?.cqc_number}</p>
           <div className="mt-2 flex gap-2 text-sm text-gray-500">
-            <span>50 Beds</span>
+            <span>{careHub?.business_type}</span>
             <span>•</span>
-            <span>Nursing & Residential Care</span>
+            <span>
+              {careHub?.city}, {careHub?.county}
+            </span>
             <span>•</span>
-            <span>Established 2010</span>
+            <span>{careHub?.postcode}</span>
           </div>
         </div>
       </div>

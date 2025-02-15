@@ -1,122 +1,88 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, Wallet, Bell } from "lucide-react";
+import { Calendar, Clock, Users, AlertTriangle, Wallet } from "lucide-react";
 
 export default function DashboardOverview() {
+  const workerDetails = JSON.parse(
+    localStorage.getItem("workerDetails") || "{}",
+  );
+
   return (
     <div className="p-6 space-y-6">
-      {/* Profile Summary */}
+      {/* Worker Summary */}
       <div className="flex items-start gap-6">
-        <div className="h-24 w-24 rounded-full bg-gray-200" />
+        <div className="h-24 w-24 rounded-lg bg-gray-200" />
         <div>
-          <h2 className="text-2xl font-bold">John Doe</h2>
-          <p className="text-gray-600">Registered Nurse</p>
+          <h2 className="text-2xl font-bold">
+            {workerDetails.first_name || ""} {workerDetails.last_name || ""}
+          </h2>
+          <p className="text-gray-600">{workerDetails.role || "Care Worker"}</p>
           <div className="mt-2 flex gap-2 text-sm text-gray-500">
-            <span>NMC: 12345678</span>
+            <span>ID: {workerDetails.worker_id || "N/A"}</span>
             <span>•</span>
-            <span>DBS: Valid</span>
+            <span>45 Shifts Completed</span>
             <span>•</span>
-            <span>5 Years Experience</span>
+            <span>4.8/5 Rating</span>
           </div>
         </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Upcoming Shifts
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Active Shifts</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              Next shift in 2 days
-            </p>
+            <p className="text-xs text-muted-foreground">This week</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Hours This Month
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Upcoming</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">48</div>
-            <p className="text-xs text-muted-foreground">+12 from last month</p>
+            <div className="text-2xl font-bold">8</div>
+            <p className="text-xs text-muted-foreground">Booked shifts</p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Hours</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">42</div>
+            <p className="text-xs text-muted-foreground">This month</p>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Earnings</CardTitle>
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">£1,250</div>
+            <div className="text-2xl font-bold">£630</div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Notifications</CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Alerts</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">2 require action</p>
+            <div className="text-2xl font-bold">1</div>
+            <p className="text-xs text-muted-foreground">Document expiring</p>
           </CardContent>
         </Card>
       </div>
-
-      {/* Upcoming Shifts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Upcoming Shifts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              {
-                date: "Mon, 15 Apr",
-                time: "07:00 - 19:00",
-                location: "Sunrise Care Home",
-                role: "Registered Nurse",
-                status: "Confirmed",
-              },
-              {
-                date: "Wed, 17 Apr",
-                time: "08:00 - 20:00",
-                location: "Meadow View Care",
-                role: "Registered Nurse",
-                status: "Pending",
-              },
-            ].map((shift, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div className="space-y-1">
-                  <p className="font-medium">{shift.location}</p>
-                  <p className="text-sm text-gray-500">{shift.role}</p>
-                </div>
-                <div className="text-right space-y-1">
-                  <p className="font-medium">{shift.date}</p>
-                  <p className="text-sm text-gray-500">{shift.time}</p>
-                </div>
-                <div>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${shift.status === "Confirmed" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
-                  >
-                    {shift.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Recent Activity */}
       <Card>
@@ -127,18 +93,18 @@ export default function DashboardOverview() {
           <div className="space-y-4">
             {[
               {
-                action: "Timesheet Approved",
-                details: "Week ending 7th April",
+                action: "Shift Booked",
+                details: "Night Shift at Sunrise Care Home",
                 time: "2 hours ago",
               },
               {
-                action: "Shift Booked",
-                details: "Sunrise Care Home - Mon, 15 Apr",
+                action: "Timesheet Submitted",
+                details: "Day Shift at Meadow View Care",
                 time: "5 hours ago",
               },
               {
                 action: "Payment Received",
-                details: "£625 - March Week 4",
+                details: "£180 for last week's shifts",
                 time: "1 day ago",
               },
             ].map((activity, i) => (
@@ -151,6 +117,46 @@ export default function DashboardOverview() {
                   <p className="text-sm text-gray-500">{activity.details}</p>
                 </div>
                 <span className="text-sm text-gray-500">{activity.time}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notifications Panel */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[
+              {
+                type: "warning",
+                message: "Your DBS check expires in 30 days",
+                action: "Renew Now",
+              },
+              {
+                type: "info",
+                message: "New shifts available at Sunrise Care Home",
+                action: "View Shifts",
+              },
+              {
+                type: "alert",
+                message: "Please complete your timesheet for last week",
+                action: "Submit",
+              },
+            ].map((notification, i) => (
+              <div
+                key={i}
+                className={`p-4 rounded-lg ${notification.type === "warning" ? "bg-yellow-50 text-yellow-800" : notification.type === "alert" ? "bg-red-50 text-red-800" : "bg-blue-50 text-blue-800"}`}
+              >
+                <div className="flex justify-between items-center">
+                  <span>{notification.message}</span>
+                  <button className="text-sm font-medium hover:underline">
+                    {notification.action}
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -1,88 +1,86 @@
-import { Route, Routes } from "react-router-dom";
-import { useRoutes } from "react-router-dom";
+import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
 import routes from "tempo-routes";
 
-// Care Worker Dashboard Components
-import DashboardLayout from "@/components/dashboard/layout";
-import DashboardOverview from "@/components/dashboard/overview";
-import AvailableShifts from "@/components/dashboard/available-shifts";
-import MyBookings from "@/components/dashboard/my-bookings";
-import MyAvailability from "@/components/dashboard/my-availability";
-import Timesheet from "@/components/dashboard/timesheet";
-import Payslips from "@/components/dashboard/payslips";
-import DashboardReports from "@/components/dashboard/reports";
-import DashboardSettings from "@/components/dashboard/settings";
-import DashboardCompliance from "@/components/dashboard/compliance";
+// Import layouts and auth
+import CareHubDashboardLayout from "./components/care-hub-dashboard/layout";
+import DashboardLayout from "./components/dashboard/layout";
+import SignIn from "./components/auth/sign-in";
+import SignUp from "./components/auth/sign-up";
+import CareHubSignIn from "./components/auth/care-hub-sign-in";
+import CareHubSignUp from "./components/auth/care-hub-sign-up";
 
-// Care Hub Dashboard Components
-import CareHubDashboardLayout from "@/components/care-hub-dashboard/layout";
-import CareHubOverview from "@/components/care-hub-dashboard/overview";
-import PostShifts from "@/components/care-hub-dashboard/post-shifts";
-import ManageShifts from "@/components/care-hub-dashboard/manage-shifts";
-import CareHubTimesheets from "@/components/care-hub-dashboard/timesheets";
-import CareHubWorkers from "@/components/care-hub-dashboard/workers";
-import CareHubIncidents from "@/components/care-hub-dashboard/incidents";
-import CareHubReports from "@/components/care-hub-dashboard/reports";
-import CareHubInvoices from "@/components/care-hub-dashboard/invoices";
-import CareHubSettings from "@/components/care-hub-dashboard/settings";
-import CareHubCompliance from "@/components/care-hub-dashboard/compliance";
+// Import components
+import CareHubDashboard from "./components/care-hub-dashboard/overview";
+import CareHubCompliance from "./components/care-hub-dashboard/compliance";
+import CareHubIncidents from "./components/care-hub-dashboard/incidents";
+import CareHubInvoices from "./components/care-hub-dashboard/invoices";
+import CareHubManageShifts from "./components/care-hub-dashboard/manage-shifts";
+import CareHubPostShifts from "./components/care-hub-dashboard/post-shifts";
+import CareHubReports from "./components/care-hub-dashboard/reports";
+import CareHubSettings from "./components/care-hub-dashboard/settings";
+import CareHubTimesheets from "./components/care-hub-dashboard/timesheets";
+import CareHubWorkers from "./components/care-hub-dashboard/workers";
 
-// Care Agency Dashboard Components
-import CareAgencyDashboardLayout from "@/components/care-agency-dashboard/layout";
-import CareAgencyOverview from "@/components/care-agency-dashboard/overview";
-import CareAgencyWorkers from "@/components/care-agency-dashboard/workers";
-import CareAgencyTimesheets from "@/components/care-agency-dashboard/timesheets";
-import CareAgencyPayments from "@/components/care-agency-dashboard/payments";
-import CareAgencyIncidents from "@/components/care-agency-dashboard/incidents";
-import CareAgencyCareHubs from "@/components/care-agency-dashboard/care-hubs";
-import CareAgencyReports from "@/components/care-agency-dashboard/reports";
-import CareAgencySettings from "@/components/care-agency-dashboard/settings";
-import CareAgencyInvoices from "@/components/care-agency-dashboard/invoices";
+import DashboardOverview from "./components/dashboard/overview";
+import MyAvailability from "./components/dashboard/my-availability";
+import MyBookings from "./components/dashboard/my-bookings";
+import MyFunctionality from "./components/dashboard/my-functionality";
+import AvailableShifts from "./components/dashboard/available-shifts";
+import Timesheet from "./components/dashboard/timesheet";
+import Payslips from "./components/dashboard/payslips";
+import DashboardReports from "./components/dashboard/reports";
+import DashboardCompliance from "./components/dashboard/compliance";
+import DashboardSettings from "./components/dashboard/settings";
 
-function App() {
+export default function App() {
   return (
     <>
-      {/* For the tempo routes */}
+      {/* Tempo routes */}
       {import.meta.env.VITE_TEMPO && useRoutes(routes)}
+
       <Routes>
-        {/* Care Worker Dashboard Routes */}
-        <Route path="/" element={<DashboardLayout />}>
-          <Route index element={<DashboardOverview />} />
-          <Route path="shifts" element={<AvailableShifts />} />
-          <Route path="bookings" element={<MyBookings />} />
-          <Route path="availability" element={<MyAvailability />} />
-          <Route path="timesheet" element={<Timesheet />} />
-          <Route path="payslips" element={<Payslips />} />
-          <Route path="reports" element={<DashboardReports />} />
-          <Route path="compliance" element={<DashboardCompliance />} />
-          <Route path="settings" element={<DashboardSettings />} />
-        </Route>
+        {/* Auth routes */}
+        <Route path="/" element={<Navigate to="/sign-in" replace />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/care-hub/sign-in" element={<CareHubSignIn />} />
+        <Route path="/care-hub/sign-up" element={<CareHubSignUp />} />
 
         {/* Care Hub Dashboard Routes */}
-        <Route path="/care-hub" element={<CareHubDashboardLayout />}>
-          <Route index element={<CareHubOverview />} />
-          <Route path="post-shifts" element={<PostShifts />} />
-          <Route path="manage-shifts" element={<ManageShifts />} />
-          <Route path="timesheets" element={<CareHubTimesheets />} />
-          <Route path="workers" element={<CareHubWorkers />} />
-          <Route path="incidents" element={<CareHubIncidents />} />
-          <Route path="reports" element={<CareHubReports />} />
-          <Route path="invoices" element={<CareHubInvoices />} />
-          <Route path="compliance" element={<CareHubCompliance />} />
-          <Route path="settings" element={<CareHubSettings />} />
+        <Route element={<CareHubDashboardLayout />}>
+          <Route path="/care-hub" element={<CareHubDashboard />} />
+          <Route path="/care-hub/compliance" element={<CareHubCompliance />} />
+          <Route path="/care-hub/incidents" element={<CareHubIncidents />} />
+          <Route path="/care-hub/invoices" element={<CareHubInvoices />} />
+          <Route
+            path="/care-hub/manage-shifts"
+            element={<CareHubManageShifts />}
+          />
+          <Route path="/care-hub/post-shifts" element={<CareHubPostShifts />} />
+          <Route path="/care-hub/reports" element={<CareHubReports />} />
+          <Route path="/care-hub/settings" element={<CareHubSettings />} />
+          <Route path="/care-hub/timesheets" element={<CareHubTimesheets />} />
+          <Route path="/care-hub/workers" element={<CareHubWorkers />} />
         </Route>
 
-        {/* Care Agency Dashboard Routes */}
-        <Route path="/care-agency" element={<CareAgencyDashboardLayout />}>
-          <Route index element={<CareAgencyOverview />} />
-          <Route path="workers" element={<CareAgencyWorkers />} />
-          <Route path="timesheets" element={<CareAgencyTimesheets />} />
-          <Route path="payments" element={<CareAgencyPayments />} />
-          <Route path="incidents" element={<CareAgencyIncidents />} />
-          <Route path="care-hubs" element={<CareAgencyCareHubs />} />
-          <Route path="reports" element={<CareAgencyReports />} />
-          <Route path="settings" element={<CareAgencySettings />} />
-          <Route path="invoices" element={<CareAgencyInvoices />} />
+        {/* Care Worker Dashboard Routes */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<DashboardOverview />} />
+          <Route path="/dashboard/availability" element={<MyAvailability />} />
+          <Route path="/dashboard/bookings" element={<MyBookings />} />
+          <Route
+            path="/dashboard/my-functionality"
+            element={<MyFunctionality />}
+          />
+          <Route path="/dashboard/shifts" element={<AvailableShifts />} />
+          <Route path="/dashboard/timesheet" element={<Timesheet />} />
+          <Route path="/dashboard/payslips" element={<Payslips />} />
+          <Route path="/dashboard/reports" element={<DashboardReports />} />
+          <Route
+            path="/dashboard/compliance"
+            element={<DashboardCompliance />}
+          />
+          <Route path="/dashboard/settings" element={<DashboardSettings />} />
         </Route>
 
         {/* Add this before any catchall route */}
@@ -91,5 +89,3 @@ function App() {
     </>
   );
 }
-
-export default App;

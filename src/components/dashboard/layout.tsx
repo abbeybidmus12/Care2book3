@@ -1,68 +1,66 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
-  Calendar,
+  Home,
   Clock,
   FileText,
-  Home,
   Settings,
   Bell,
   FileCheck,
+  User,
+  Calendar,
+  Wallet,
 } from "lucide-react";
 
 const navigation = [
-  { name: "Overview", href: "/", icon: Home, color: "text-blue-500" },
+  { name: "Overview", href: "/dashboard", icon: Home, color: "text-blue-500" },
   {
     name: "Available Shifts",
-    href: "/shifts",
+    href: "/dashboard/shifts",
     icon: Calendar,
     color: "text-purple-500",
   },
   {
     name: "My Bookings",
-    href: "/bookings",
+    href: "/dashboard/bookings",
     icon: Clock,
-    color: "text-blue-500",
-  },
-  {
-    name: "My Availability",
-    href: "/availability",
-    icon: Calendar,
     color: "text-green-500",
   },
   {
-    name: "Timesheet",
-    href: "/timesheet",
+    name: "Timesheets",
+    href: "/dashboard/timesheet",
     icon: FileText,
     color: "text-yellow-500",
   },
   {
     name: "Payslips",
-    href: "/payslips",
-    icon: FileText,
-    color: "text-pink-500",
-  },
-  {
-    name: "Reports",
-    href: "/reports",
-    icon: Clock,
-    color: "text-red-500",
+    href: "/dashboard/payslips",
+    icon: Wallet,
+    color: "text-orange-500",
   },
   {
     name: "Compliance",
-    href: "/compliance",
+    href: "/dashboard/compliance",
     icon: FileCheck,
+    color: "text-violet-500",
+  },
+  {
+    name: "My Profile",
+    href: "/dashboard/my-functionality",
+    icon: User,
     color: "text-indigo-500",
   },
   {
     name: "Settings",
-    href: "/settings",
+    href: "/dashboard/settings",
     icon: Settings,
     color: "text-gray-500",
   },
 ];
+
+import { Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
   const location = useLocation();
@@ -76,7 +74,11 @@ export default function DashboardLayout() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between items-center">
             <div className="flex-1 flex items-center pl-64">
-              <h1 className="text-xl font-bold">Welcome, John Doe</h1>
+              <h1 className="text-xl font-bold">
+                Welcome,{" "}
+                {JSON.parse(localStorage.getItem("workerDetails") || "{}")
+                  .first_name || "User"}
+              </h1>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon">
@@ -85,12 +87,22 @@ export default function DashboardLayout() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-full bg-gray-200" />
-                  <span className="text-sm font-medium">John Doe</span>
+                  <span className="text-sm font-medium">
+                    {JSON.parse(localStorage.getItem("workerDetails") || "{}")
+                      .role || "Care Worker"}
+                  </span>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate("/logout")}
+                  onClick={async () => {
+                    // Sign out from Supabase
+                    await supabase.auth.signOut();
+                    // Clear worker details
+                    localStorage.removeItem("workerDetails");
+                    // Redirect to sign in
+                    navigate("/sign-in");
+                  }}
                 >
                   Logout
                 </Button>
