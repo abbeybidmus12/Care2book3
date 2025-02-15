@@ -1,9 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { useRoutes } from "react-router-dom";
 import routes from "tempo-routes";
-import Home from "@/components/home";
-import CareBookApplicationForm from "@/components/care-book-application-form";
-import CareHubRegistrationForm from "@/components/care-hub-registration-form";
 
 // Care Worker Dashboard Components
 import DashboardLayout from "@/components/dashboard/layout";
@@ -15,6 +12,7 @@ import Timesheet from "@/components/dashboard/timesheet";
 import Payslips from "@/components/dashboard/payslips";
 import DashboardReports from "@/components/dashboard/reports";
 import DashboardSettings from "@/components/dashboard/settings";
+import DashboardCompliance from "@/components/dashboard/compliance";
 
 // Care Hub Dashboard Components
 import CareHubDashboardLayout from "@/components/care-hub-dashboard/layout";
@@ -27,6 +25,7 @@ import CareHubIncidents from "@/components/care-hub-dashboard/incidents";
 import CareHubReports from "@/components/care-hub-dashboard/reports";
 import CareHubInvoices from "@/components/care-hub-dashboard/invoices";
 import CareHubSettings from "@/components/care-hub-dashboard/settings";
+import CareHubCompliance from "@/components/care-hub-dashboard/compliance";
 
 // Care Agency Dashboard Components
 import CareAgencyDashboardLayout from "@/components/care-agency-dashboard/layout";
@@ -46,16 +45,8 @@ function App() {
       {/* For the tempo routes */}
       {import.meta.env.VITE_TEMPO && useRoutes(routes)}
       <Routes>
-        {/* Landing and Registration Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/register/worker" element={<CareBookApplicationForm />} />
-        <Route
-          path="/register/care-hub"
-          element={<CareHubRegistrationForm />}
-        />
-
         {/* Care Worker Dashboard Routes */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route path="/" element={<DashboardLayout />}>
           <Route index element={<DashboardOverview />} />
           <Route path="shifts" element={<AvailableShifts />} />
           <Route path="bookings" element={<MyBookings />} />
@@ -63,6 +54,7 @@ function App() {
           <Route path="timesheet" element={<Timesheet />} />
           <Route path="payslips" element={<Payslips />} />
           <Route path="reports" element={<DashboardReports />} />
+          <Route path="compliance" element={<DashboardCompliance />} />
           <Route path="settings" element={<DashboardSettings />} />
         </Route>
 
@@ -76,6 +68,7 @@ function App() {
           <Route path="incidents" element={<CareHubIncidents />} />
           <Route path="reports" element={<CareHubReports />} />
           <Route path="invoices" element={<CareHubInvoices />} />
+          <Route path="compliance" element={<CareHubCompliance />} />
           <Route path="settings" element={<CareHubSettings />} />
         </Route>
 
