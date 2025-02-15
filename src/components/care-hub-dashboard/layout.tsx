@@ -10,6 +10,7 @@ import {
   FileText,
   Settings,
   Bell,
+  FileCheck,
 } from "lucide-react";
 
 const navigation = [
@@ -55,6 +56,12 @@ const navigation = [
     href: "/care-hub/invoices",
     icon: FileText,
     color: "text-orange-500",
+  },
+  {
+    name: "Compliance",
+    href: "/care-hub/compliance",
+    icon: FileCheck,
+    color: "text-violet-500",
   },
   {
     name: "Settings",

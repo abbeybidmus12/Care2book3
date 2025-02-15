@@ -2,49 +2,63 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, FileText, Home, Settings, Bell } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  FileText,
+  Home,
+  Settings,
+  Bell,
+  FileCheck,
+} from "lucide-react";
 
 const navigation = [
-  { name: "Overview", href: "/dashboard", icon: Home, color: "text-blue-500" },
+  { name: "Overview", href: "/", icon: Home, color: "text-blue-500" },
   {
     name: "Available Shifts",
-    href: "/dashboard/shifts",
+    href: "/shifts",
     icon: Calendar,
     color: "text-purple-500",
   },
   {
     name: "My Bookings",
-    href: "/dashboard/bookings",
+    href: "/bookings",
     icon: Clock,
     color: "text-blue-500",
   },
   {
     name: "My Availability",
-    href: "/dashboard/availability",
+    href: "/availability",
     icon: Calendar,
     color: "text-green-500",
   },
   {
     name: "Timesheet",
-    href: "/dashboard/timesheet",
+    href: "/timesheet",
     icon: FileText,
     color: "text-yellow-500",
   },
   {
     name: "Payslips",
-    href: "/dashboard/payslips",
+    href: "/payslips",
     icon: FileText,
     color: "text-pink-500",
   },
   {
     name: "Reports",
-    href: "/dashboard/reports",
+    href: "/reports",
     icon: Clock,
     color: "text-red-500",
   },
   {
+    name: "Compliance",
+    href: "/compliance",
+    icon: FileCheck,
+    color: "text-indigo-500",
+  },
+  {
     name: "Settings",
-    href: "/dashboard/settings",
+    href: "/settings",
     icon: Settings,
     color: "text-gray-500",
   },
