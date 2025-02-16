@@ -17,6 +17,20 @@ const BookingCard: FC<BookingCardProps> = ({ booking, status }) => (
             <div className="text-sm text-muted-foreground">
               {booking.careHub}
             </div>
+            {/* Display uniform required label if true */}
+            {booking.shift?.uniform_required && (
+              <div className="mt-2 inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                Uniform Required
+              </div>
+            )}
+            {status === "pending" && booking.shift && (
+              <div className="text-sm text-muted-foreground mt-2">
+                <p>{booking.shift.address_line1}</p>
+                {booking.shift.address_line2 && <p>{booking.shift.address_line2}</p>}
+                <p>{booking.shift.city}</p>
+                <p>{booking.shift.postcode}</p>
+              </div>
+            )}
             <div className="text-sm text-muted-foreground">
               Booking ID: {booking.bookingId || booking.id}
             </div>
@@ -38,18 +52,11 @@ const BookingCard: FC<BookingCardProps> = ({ booking, status }) => (
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <MapPin className="h-4 w-4 mr-2" />
-              View Map
-              <ExternalLink className="h-4 w-4 ml-2" />
+          {status === "pending" && (
+            <Button variant="destructive" size="sm">
+              Cancel Booking
             </Button>
-            {status === "pending" && (
-              <Button variant="destructive" size="sm">
-                Cancel Booking
-              </Button>
-            )}
-          </div>
+          )}
         </div>
 
         <div className="text-right space-y-2">
@@ -127,7 +134,7 @@ export default function MyBookings() {
         const transformedBookings = bookings.map((booking) => ({
           id: booking.id,
           bookingId: booking.id,
-          shiftId: booking.shift_id,
+          shiftId: booking.shift.id,
           role: booking.shift.role,
           careHub: booking.shift.care_hub,
           date: booking.shift.date,
@@ -136,6 +143,7 @@ export default function MyBookings() {
           shiftType: booking.shift.shift_type,
           status: booking.status,
           bookedAt: booking.created_at,
+          shift: booking.shift, // Include full shift object for additional properties
         }));
 
         setSavedBookings(transformedBookings);
@@ -236,7 +244,7 @@ export default function MyBookings() {
   };
 
   // Combine saved bookings with static data structure
-  const bookings = {
+  const bookings: Record<"pending" | "upcoming" | "past" | "canceled", BookingCardProps["booking"][]> = {
     pending:
       savedBookings.length > 0
         ? savedBookings.filter((booking) => booking.status === "Pending")

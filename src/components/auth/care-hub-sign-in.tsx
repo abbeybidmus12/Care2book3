@@ -27,9 +27,9 @@ export default function CareHubSignIn() {
 
       // Fetch care hub details
       const { data: careHubData, error: careHubError } = await supabase
-        .from("carehub_reg")
+        .from<{ email: string }>("carehub_reg")
         .select("*")
-        .eq("email", formData.email)
+        .eq("email" as keyof { email: string }, formData.email)
         .single();
 
       if (careHubError) throw careHubError;

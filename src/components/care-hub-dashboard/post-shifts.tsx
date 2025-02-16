@@ -73,58 +73,81 @@ export default function PostShifts() {
 
   const handlePostShift = async () => {
     try {
-      // First get the care hub address details
-      const { data: careHubData, error: careHubError } = await supabase
-        .from("carehub_reg")
-        .select("*")
-        .eq("care_home_name", formData.careHub)
-        .single();
+      // Validate required fields
+      const requiredFields = {
+        role: formData.role,
+        date: formData.date,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        hourlyRate: formData.hourlyRate
+      };
 
-      if (careHubError) throw careHubError;
+      const emptyFields = Object.entries(requiredFields)
+        .filter(([_, value]) => !value)
+        .map(([key]) => key);
 
-      // Then create the shift with the address details
-      // Generate a shift ID with format SH + YYYYMMDDHHMMSS
-      const shiftId = `SH${new Date()
-        .toISOString()
-        .replace(/[-:T.]/g, "")
-        .slice(0, 14)}`;
+      if (emptyFields.length > 0) {
+        throw new Error(`Please fill in required fields: ${emptyFields.join(', ')}`);
+      }
 
-      const { error } = await supabase.from("shifts").insert([
-        {
-          shift_id: shiftId,
-          role: formData.role,
-          care_hub: formData.careHub,
-          date: formData.date,
-          start_time: formData.startTime + ":00",
-          end_time: formData.endTime + ":00",
-          break_duration: parseInt(formData.breakDuration || "0"),
-          shift_type: formData.shiftType,
-          hourly_rate: parseFloat(formData.hourlyRate || "0"),
-          shift_bonus: parseFloat(formData.shiftBonus || "0"),
-          preferred_worker_only: formData.preferredWorkerOnly || false,
-          uniform_required: formData.uniformRequired || false,
-          special_instructions: formData.specialInstructions || null,
-          emergency_contact: formData.emergencyContact || null,
-          qualifications: formData.qualifications || [],
-          experience: formData.experience || null,
-          status: "Open",
-          address_line1: careHubData.address_line1,
-          address_line2: careHubData.address_line2,
-          city: careHubData.city,
-          county: careHubData.county,
-          postcode: careHubData.postcode,
-        },
-      ]);
+      // Debug log: Original input value
+      console.log('Original hourly rate input:', formData.hourlyRate);
 
-      if (error) throw error;
+      // Parse the numeric values
+      const hourlyRate = parseFloat(formData.hourlyRate);
+      const shiftBonus = parseFloat(formData.shiftBonus || "0");
+      const breakDuration = parseInt(formData.breakDuration || "0");
+
+      // Debug log: Parsed value
+      console.log('Parsed hourly rate:', hourlyRate);
+
+      if (isNaN(hourlyRate) || hourlyRate <= 0) {
+        throw new Error("Please enter a valid hourly rate");
+      }
+
+      // Format the shift data
+      const shiftData = {
+        role: formData.role,
+        care_hub: formData.careHub,
+        date: formData.date,
+        start_time: `${formData.startTime}:00`,
+        end_time: `${formData.endTime}:00`,
+        break_duration: breakDuration,
+        shift_type: formData.shiftType,
+        hourly_rate: hourlyRate,
+        shift_bonus: shiftBonus,
+        preferred_worker_only: formData.preferredWorkerOnly,
+        uniform_required: formData.uniformRequired,
+        special_instructions: formData.specialInstructions || null,
+        emergency_contact: formData.emergencyContact || null,
+        qualifications: formData.qualifications,
+        experience: formData.experience || null,
+        status: "Open",
+        created_at: new Date().toISOString()
+      };
+
+      // Debug log: Data being sent to Supabase
+      console.log('Shift data being sent to database:', shiftData);
+
+      const { error: insertError, data } = await supabase
+        .from("shifts")
+        .insert([shiftData])
+        .select();
+
+      // Debug log: Response from Supabase
+      console.log('Data returned from database:', data);
+
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        throw new Error(insertError.message);
+      }
 
       setFormData(initialFormState);
-      // Fill addresses after posting shift
-      await fillShiftAddresses();
       alert("Shift posted successfully!");
+      
     } catch (error) {
-      console.error("Error posting shift:", error);
-      alert("Error posting shift");
+      console.error("Error details:", error);
+      alert(error.message || "Error posting shift. Please try again.");
     }
   };
 
@@ -298,11 +321,8 @@ export default function PostShifts() {
                 <Input
                   type="number"
                   placeholder="15.00"
-                  step="0.50"
                   value={formData.hourlyRate}
-                  onChange={(e) =>
-                    handleInputChange("hourlyRate", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("hourlyRate", e.target.value)}
                 />
               </div>
               <div>
@@ -310,7 +330,7 @@ export default function PostShifts() {
                 <Input
                   type="number"
                   placeholder="0.00"
-                  step="0.50"
+                  step="0.00"
                   value={formData.shiftBonus}
                   onChange={(e) =>
                     handleInputChange("shiftBonus", e.target.value)

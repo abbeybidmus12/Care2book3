@@ -114,6 +114,41 @@ export type Database = {
         };
         Relationships: [];
       };
+      shift_bookings: {
+        Row: {
+          id: string
+          status: 'Pending' | 'Approved' | 'Completed' | 'Cancelled'
+          created_at: string
+          approved_at?: string
+          // Add other columns as needed
+        }
+        Insert: {
+          id?: string
+          status?: string
+          created_at?: string
+          approved_at?: string
+        }
+        Update: {
+          id?: string
+          status?: string
+          created_at?: string
+          approved_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_bookings_shift_id_fkey"
+            columns: ["shift_id"]
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_bookings_worker_id_fkey"
+            columns: ["worker_id"]
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     };
     Views: {
       [_ in never]: never;

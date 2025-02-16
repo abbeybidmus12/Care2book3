@@ -87,3 +87,36 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 export function useSession() {
   return useContext(SessionContext);
 }
+
+const UserContext = createContext(null);
+
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const session = supabase.auth.session();
+    setUser(session?.user ?? null);
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener?.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <UserContext.Provider value={user}>{children}</UserContext.Provider>
+  );
+};
+
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return { user: context };
+};

@@ -101,11 +101,11 @@ export default function Settings() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Short Shift Break (≤6 hours)</Label>
-                  <Input type="number" placeholder="15" suffix="minutes" />
+                  <Input type="number" placeholder="15" />
                 </div>
                 <div>
-                  <Label>Long Shift Break (>6 hours)</Label>
-                  <Input type="number" placeholder="30" suffix="minutes" />
+                  <Label>Long Shift Break (6 hours)</Label>
+                  <Input type="number" placeholder="30" />
                 </div>
               </div>
             </CardContent>
